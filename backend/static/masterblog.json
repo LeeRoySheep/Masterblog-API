@@ -1,0 +1,34 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "title": "Masterblog API",
+        "version": "1.0.0"
+    },
+    "servers": [{ "url": "http://localhost:3002"}],
+    "tags": [{ "name": "Post", "description": "Post API - CRUD" }],
+    "paths": {
+        "/api/posts": {
+            "get": {
+                "summary": "Returns all posts",
+                "produces": ["application/json"],
+                "tags": ["Posts"],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    }
+                }
+            },
+            "post": {
+                "summary": "Returns the posted post as dictionary",
+                "produces": ["application/json"],
+                "tags": ["Post"],
+                "responses": {
+                    "201": {
+                        "description": "A new resource was created successfully."
+                    }
+                }
+            }
+        }
+
+    }
+}

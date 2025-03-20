@@ -2,34 +2,38 @@ from flask import Flask, jsonify, request
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
 from flask_cors import CORS
 from flask_swagger_ui import get_swaggerui_blueprint
+
+#create the app with FLask
 app = Flask(__name__)
+#Adding Swagger API documentation to the app
 SWAGGER_URL="/api/docs"  # (1) swagger endpoint e.g. HTTP://localhost:5002/api/docs
-URL = "/static/masterblog.json"# (2) ensure you create this dir and file
+API_URL = "/static/masterblog.json"# (2) ensure you create this dir and file
 swagger_ui_blueprint = get_swaggerui_blueprint(
     SWAGGER_URL,
-    URL,
+    API_URL,
     config={
         "app_name": "MasterblogAPI" # (3) You can change this if you like
     })
 app.register_blueprint(swagger_ui_blueprint, url_prefix=SWAGGER_URL)
 
 
-#build api documentation with swagger
 
-# Configure the application
-app.config['SECRET_KEY'] = 'your_secret_key'
-app.config['JWT_SECRET_KEY'] = 'your_jwt_secret'
+# Configure jwt keys for user logging and adding app to jwt
+app.config['SECRET_KEY'] = 'myKey'
+app.config['JWT_SECRET_KEY'] = 'myjwtKeyttt'
 jwt = JWTManager(app)
 
-# Add CORS to allow cross-origin requests
+# Add CORS to allow cross-origin requests for independant host server requests
 CORS(app)
 
-# Dummy in-memory database
+# Dummys as memory database
 POSTS = [
     {"id": 1, "title": "First Post", "content": "This is the first post", "category": "General"},
     {"id": 2, "title": "Second Post", "content": "This is the second post", "category": "Updates"},
 ]
-USER = {"username": "admin", "password": "password"}  # Example user credentials
+USER = {"admin": {"password": "admin", "real-name": "Adam Administrateur", "role": "admin", "email": "adam.admin@masterblog.com"},
+        "user": {"password": "user", "real-name": "Max User", "role": "user", "email": "max.user@masterblog.com"}
+        } # Example user credentials
 
 
 # Route to get posts
@@ -83,7 +87,7 @@ def login():
     username = data.get("username")
     password = data.get("password")
 
-    if username == USER["username"] and password == USER["password"]:
+    if username in USER.keys() and password == USER[username]["password"]:
         token = create_access_token(identity=username)  # Generate JWT token
         return jsonify({"token": token}), 200
     return jsonify({"msg": "Invalid username or password"}), 401
