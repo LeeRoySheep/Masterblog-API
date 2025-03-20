@@ -1,8 +1,21 @@
 from flask import Flask, jsonify, request
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
 from flask_cors import CORS
-
+from flask_swagger_ui import get_swaggerui_blueprint
 app = Flask(__name__)
+SWAGGER_URL="/api/docs"  # (1) swagger endpoint e.g. HTTP://localhost:5002/api/docs
+URL = "/static/masterblog.json"# (2) ensure you create this dir and file
+swagger_ui_blueprint = get_swaggerui_blueprint(
+    SWAGGER_URL,
+    URL,
+    config={
+        "app_name": "MasterblogAPI" # (3) You can change this if you like
+    })
+app.register_blueprint(swagger_ui_blueprint, url_prefix=SWAGGER_URL)
+
+
+#build api documentation with swagger
+
 # Configure the application
 app.config['SECRET_KEY'] = 'your_secret_key'
 app.config['JWT_SECRET_KEY'] = 'your_jwt_secret'
@@ -92,4 +105,4 @@ def logout():
 
 
 if __name__ == '__main__':
-    app.run(port=5002)
+    app.run(port=3002)
