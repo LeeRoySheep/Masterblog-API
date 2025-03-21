@@ -61,9 +61,11 @@ def add_post():
 @app.route('/api/posts/<int:post_id>', methods=['DELETE'])
 @jwt_required()
 def delete_post(post_id):
-    global POSTS
-    POSTS = [post for post in POSTS if post["id"] != post_id]
-    return jsonify({"msg": "Post deleted successfully"}), 200
+    for post in POSTS:
+        if post["id"] == post_id:
+            POSTS.remove(post)
+            return jsonify({"msg": "Post deleted successfully!"}), 200
+        return jsonify({"msg": "Post not found!"}), 401
 
 
 # Route to update a post (requires authentication)
@@ -78,6 +80,27 @@ def update_post(post_id):
             post["category"] = post_data.get("category", post["category"])
             return jsonify(post), 200
     return jsonify({"error": "Post not found"}), 404
+
+
+# Route to search for blog entries
+@app.route( '/api/posts/search', methods=['GET'])
+def search_posts():
+    search_title = request.args.get('title',"").lower()
+    search_category = request.args.get('category',"").lower()
+    search_content = request.args.get('content',"").lower()
+    found_posts = []
+    for post in POSTS:
+        if search_title in post["title"].lower() and search_title:
+            found_posts.append(post)
+            continue
+        if search_category in post["category"].lower() and search_category:
+            found_posts.append(post)
+            continue
+        if search_content in post["content"].lower() and search_content:
+            found_posts.append(post)
+    if not found_posts:
+        return jsonify({"error": "No posts found"}), 400
+    return jsonify(found_posts), 200
 
 
 # Login route
@@ -97,11 +120,11 @@ def login():
 @app.route('/api/protected', methods=['GET'])
 @jwt_required()
 def protected():
-    current_user = get_jwt_identity()
-    return jsonify({"logged_in_as": current_user}), 200
+    user = get_jwt_identity()
+    return jsonify({"logged_in_as": user}), 200
 
 
-# Logout route (optional - here for demo purposes, but JWT tokens are stateless)
+# Logout route not necessery as handelt in javascrirpt but good for understanding
 @app.route('/api/logout', methods=['POST'])
 @jwt_required()
 def logout():
