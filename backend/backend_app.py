@@ -47,8 +47,12 @@ def get_posts():
 @jwt_required()
 def add_post():
     post_data = request.get_json()
+    if len(POSTS) > 0:
+        new_id = POSTS[len(POSTS) - 1]["id"] + 1
+    else:
+        new_id = 1
     new_post = {
-        "id": len(POSTS) + 1,
+        "id": new_id,
         "title": post_data.get("title"),
         "content": post_data.get("content"),
         "category": post_data.get("category"),
@@ -65,7 +69,7 @@ def delete_post(post_id):
         if post["id"] == post_id:
             POSTS.remove(post)
             return jsonify({"msg": "Post deleted successfully!"}), 200
-        return jsonify({"msg": "Post not found!"}), 401
+    return jsonify({"msg": "Post not found!"}), 401
 
 
 # Route to update a post (requires authentication)

@@ -110,7 +110,7 @@ function loadPosts() {
         data.forEach((post) => {
             const postDiv = document.createElement('div');
             postDiv.className = 'post';
-            postDiv.setAttribute("data-post-id", `${post.id}` );
+            postDiv.setAttribute("data-post-id", post.id );
             postDiv.innerHTML = `
                 <h2 class="post-title">${post.title}</h2>
                 <p class="post-category">${post.category}</p>
@@ -137,7 +137,7 @@ function addPost() {
                 alert('Need to be logged in to post!');
                 return;
             }
-            else{
+            else {
                  //Now check user input
                 const title = document.getElementById('post-title').value;
                 const category = document.getElementById('post-category').value;
@@ -146,13 +146,13 @@ function addPost() {
                 if (!title || !category || !content) {
                     alert('All fields are required to add a post!');
                     return;
-                }
+                };
 
                 fetch(`${baseUrl}/posts`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                        'Authorization': `Bearer ${localStorage.getItem('token', "")}`
                     },
                     body: JSON.stringify({ title, category, content })
                 })
@@ -160,15 +160,15 @@ function addPost() {
                     if (!response.ok){
                         alert(response.json());
                         return;
-                    }
+                    };
                 })
                 .then(() => {
                     alert('Post added successfully!');
                     location.reload(); // Refresh posts
                 })
             }
-        })
-        .catch((error) => console.error('Error adding post:', error));
+    })
+    .catch((error) => console.error('Error adding post:', error));
 }
 
 
@@ -187,18 +187,13 @@ function deletePost(postId) {
             }
             fetch(`${baseUrl}/posts/${postId}`, {
                 method: 'DELETE',
-                headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+                headers: { 'Authorization': `Bearer ${localStorage.getItem('token', "")}` }
             })
             .then((response) => {
-                if (!response.ok) {
-                    alert(response.json());
-                    return;
-                }
-                else {
-                    alert('Post deleted successfully!');
-                    loadPosts();
-            }
-        })
+                alert('Post deleted successfully!');
+                loadPosts();
+            })
+
     })
     .catch((error) => console.error('Error deleting post:', error));
 }
