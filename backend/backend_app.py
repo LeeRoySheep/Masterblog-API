@@ -23,7 +23,7 @@ app.config['SECRET_KEY'] = 'myKey'
 app.config['JWT_SECRET_KEY'] = 'myjwtKeyttt'
 jwt = JWTManager(app)
 
-# Add CORS to allow cross-origin requests for independant host server requests
+# Add CORS to allow cross-origin requests for independent host server requests
 CORS(app)
 
 # Dummys as memory database

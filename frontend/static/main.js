@@ -6,6 +6,7 @@ window.onload = function () {
     if (savedBaseUrl) {
         document.getElementById('api-base-url').value = savedBaseUrl;
     }
+    createSearchField();// Create search field as header
     updateAuthUI(); // Update auth UI immediately on load
     loadPosts();    // Load posts
 };
@@ -90,6 +91,61 @@ function setupShowPasswordToggle() {
             }
         });
     }
+}
+
+//create search field
+function createSearchField() {
+    const container = document.getElementById('search-bar');
+    container.innerHTML = `
+        <label for="title">Title:</label>
+        <input type="text" id="title" placeholder="Enter title to search" />
+        <label for="category">Category:</label>
+        <input type="text" id="category" placeholder="Enter category to search" />
+        <label for="content">Content:</label>
+        <input type="text" id="content" placeholder="Enter content to search" />
+        <button onclick="searchPosts()">Search</button>
+    `;
+}
+
+// Handle search form submission
+function searchPosts() {
+    const title = document.getElementById('title').value;
+    const category = document.getElementById('category').value;
+    const content = document.getElementById('content').value;
+    const baseUrl = document.getElementById('api-base-url').value;
+
+    fetch(`${baseUrl}/posts/search?title=${title}&category=${category}&content=${content}`, {
+        method: 'GET'
+    })
+    .then((response) => {
+        if (!response.ok) throw new Error('Failed to fetch posts.');
+        return response.json();
+    })
+    .then((data) => {
+        const postContainer = document.getElementById('post-container') || createPostContainer();
+        postContainer.innerHTML = ''; // Clear existing posts
+
+        data.forEach((post) => {
+            const postDiv = document.createElement('div');
+            postDiv.className = 'post';
+            postDiv.setAttribute("data-post-id", post.id );
+            postDiv.innerHTML = `
+                <h2 class="post-title">${post.title}</h2>
+                <p class="post-category">${post.category}</p>
+                <p class="post-content">${post.content}</p>
+                <button onclick="deletePost(${post.id})">Delete</button>
+                <button onclick="updatePost(${post.id})">Update</button>
+            `;
+            postContainer.appendChild(postDiv);
+            postContainer.innerHTML += `
+                <button onclick="loadPosts()">back</button>
+            `;
+        });
+
+    })
+    .catch((error) => {
+        console.error('Error searching posts:', error);
+    });
 }
 
 // Load all posts
@@ -189,11 +245,10 @@ function deletePost(postId) {
                 method: 'DELETE',
                 headers: { 'Authorization': `Bearer ${localStorage.getItem('token', "")}` }
             })
-            .then((response) => {
+            .then(() => {
                 alert('Post deleted successfully!');
                 loadPosts();
-            })
-
+            });
     })
     .catch((error) => console.error('Error deleting post:', error));
 }
@@ -201,24 +256,32 @@ function deletePost(postId) {
 // Update an existing post
 function updatePost(postId) {
     const baseUrl = document.getElementById('api-base-url').value;
-
-    const title = prompt('Enter new title for the post:');
-    const category = prompt('Enter new category for the post:');
-    const content = prompt('Enter new content for the post:');
-
-    fetch(`${baseUrl}/posts/${postId}`, {
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
-        body: JSON.stringify({ title, category, content })
+    fetch(`${baseUrl}/protected`, {
+        method: 'GET',
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token', "")}` }
     })
+    .then(response => {
+        if(!response.ok) {
+            alert('Please login to update Post!');
+            return;
+        };
+        const title = prompt('Please enter new titl: ');
+        const content = prompt('Please enter new content: ');
+        const category = prompt('Please enter new category: ');
+        fetch(`${baseUrl}/posts/${postId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('token', "")}`
+            },
+            body: JSON.stringify({ title, category, content })
+        })
         .then(() => {
             alert('Post updated successfully!');
             loadPosts(); // Refresh posts
-        })
-        .catch((error) => console.error('Error updating post:', error));
+        });
+    })
+    .catch((error) => console.error('Error updating post:', error));
 }
 
 // Login function
