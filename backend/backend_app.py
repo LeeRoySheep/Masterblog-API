@@ -11,7 +11,7 @@ import json
 app = Flask(__name__)
 #Adding Swagger API documentation to the app
 SWAGGER_URL="/api/docs"  # (1) swagger endpoint e.g. HTTP://localhost:5002/api/docs
-API_URL = "/static/masterblog.json"# (2) ensure you create this dir and file
+API_URL = "./static/masterblog.json"# (2) ensure you create this dir and file
 swagger_ui_blueprint = get_swaggerui_blueprint(
     SWAGGER_URL,
     API_URL,
@@ -50,13 +50,13 @@ USER = {
 
 #getter for posts
 def posts():
-    with open("static/posts.json", "r", encoding="utf8") as reader:
+    with open("./static/posts.json", "r", encoding="utf8") as reader:
         return json.load(reader)
 
 
 #setter for posts
 def posts_set(pos):
-    with open("static/posts.json", "w", encoding="utf8") as writer:
+    with open("./static/posts.json", "w", encoding="utf8") as writer:
         json.dump(pos, writer, indent=4)
 
 
