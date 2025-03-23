@@ -334,16 +334,16 @@ function deletePost(postId) {
 // Update an existing post
 function updatePost(postId) {
     const baseUrl = document.getElementById('api-base-url').value;
-    fetch(`${baseUrl}/protected`, {
+    fetch(`${baseUrl}/protected?id=${postId}`, {
         method: 'GET',
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token', "")}` }
     })
     .then(response => {
         if(!response.ok) {
-            alert('Please login to update Post!');
+            alert('Please login as admin or author to update this Post!');
             return;
         };
-        const title = prompt('Please enter new titl: ');
+        const title = prompt('Please enter new titel: ');
         const content = prompt('Please enter new content: ');
         const category = prompt('Please enter new category: ');
         fetch(`${baseUrl}/posts/${postId}`, {

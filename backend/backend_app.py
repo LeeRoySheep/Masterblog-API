@@ -183,10 +183,16 @@ def login():
     return jsonify({"msg": "Invalid username or password"}), 401
 
 
-# Protected route to validate the token
+# Protected route to validate the token and extra route id to validate author of a post
 @app.route('/api/protected', methods=['GET'])
 @jwt_required()
 def protected():
+    if request.args.get("id"):
+        for post in POSTS:
+            if post["id"] == int(request.args.get("id")):
+                if (get_jwt_identity() != post["author"]
+                    and USER[get_jwt_identity()]["role"] != "admin"):
+                    return jsonify({"msg": "You are not authorized to change this post!"}), 401
     user = get_jwt_identity()
     return jsonify({"logged_in_as": user}), 200
 
