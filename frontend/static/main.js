@@ -97,16 +97,16 @@ function setupShowPasswordToggle() {
 function createSearchField() {
     const container = document.getElementById('search-bar');
     container.innerHTML = `
-        <label for="author">Author:</label>
-        <input type="text" id="author" placeholder="Enter author to search" />
         <label for="title">Title:</label>
         <input type="text" id="title" placeholder="Enter title to search" />
         <label for="category">Category:</label>
         <input type="text" id="category" placeholder="Enter category to search" />
         <label for="content">Content:</label>
         <input type="text" id="content" placeholder="Enter content to search" />
-        <label for"date">Date:</label>
-        <input type="date" id="date" placeholder="Enter date to search" />
+        <label for="author">Author:</label>
+        <input type="text" id="author" placeholder="Enter author to search" />
+        <label for="date">Date:</label>
+        <input type="text" id="date" placeholder="Enter date to search" />
         <button onclick="searchPosts()">Search</button>
     `;
 }
@@ -119,16 +119,12 @@ function searchPosts() {
     const date = document.getElementById('date').value;
     const author = document.getElementById('author').value;
     const baseUrl = document.getElementById('api-base-url').value;
+    search_string = `${baseUrl}`
+    search_string += `/posts/search?title=${title}&`
+    search_string += `category=${category}&content=${content}`
+    search_string += `&author=${author}&date=${date}`
 
-    fetch(`
-        ${baseUrl}/posts/search?
-        author=${author}&
-        title=${title}&
-        category=$
-        date=${date}&
-        category=${category}&
-        content=${content}
-        `, {
+    fetch(search_string, {
         method: 'GET'
     })
     .then((response) => {

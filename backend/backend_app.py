@@ -160,6 +160,7 @@ def search_posts():
             continue
         if search_content in post["content"].lower() and search_content:
             found_posts.append(post)
+            continue
         if search_author in post["author"].lower() and search_author:
             found_posts.append(post)
         if search_date in post["date"] and search_date:
