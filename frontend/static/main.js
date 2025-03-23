@@ -97,12 +97,16 @@ function setupShowPasswordToggle() {
 function createSearchField() {
     const container = document.getElementById('search-bar');
     container.innerHTML = `
+        <label for="author">Author:</label>
+        <input type="text" id="author" placeholder="Enter author to search" />
         <label for="title">Title:</label>
         <input type="text" id="title" placeholder="Enter title to search" />
         <label for="category">Category:</label>
         <input type="text" id="category" placeholder="Enter category to search" />
         <label for="content">Content:</label>
         <input type="text" id="content" placeholder="Enter content to search" />
+        <label for"date">Date:</label>
+        <input type="date" id="date" placeholder="Enter date to search" />
         <button onclick="searchPosts()">Search</button>
     `;
 }
@@ -112,9 +116,19 @@ function searchPosts() {
     const title = document.getElementById('title').value;
     const category = document.getElementById('category').value;
     const content = document.getElementById('content').value;
+    const date = document.getElementById('date').value;
+    const author = document.getElementById('author').value;
     const baseUrl = document.getElementById('api-base-url').value;
 
-    fetch(`${baseUrl}/posts/search?title=${title}&category=${category}&content=${content}`, {
+    fetch(`
+        ${baseUrl}/posts/search?
+        author=${author}&
+        title=${title}&
+        category=$
+        date=${date}&
+        category=${category}&
+        content=${content}
+        `, {
         method: 'GET'
     })
     .then((response) => {
@@ -122,7 +136,8 @@ function searchPosts() {
         return response.json();
     })
     .then((data) => {
-        const postContainer = document.getElementById('post-container') || createPostContainer();
+        const postContainer = document.getElementById('post-container')
+        || createPostContainer();
         postContainer.innerHTML = ''; // Clear existing posts
 
         data.forEach((post) => {
@@ -131,7 +146,9 @@ function searchPosts() {
             postDiv.setAttribute("data-post-id", post.id );
             postDiv.innerHTML = `
                 <h2 class="post-title">${post.title}</h2>
+                <p class="post-author">${post.author}</p>
                 <p class="post-category">${post.category}</p>
+                <p class="post-date">${post.date}</p>
                 <p class="post-content">${post.content}</p>
                 <button onclick="deletePost(${post.id})">Delete</button>
                 <button onclick="updatePost(${post.id})">Update</button>
@@ -154,8 +171,10 @@ function createSortField(container) {
             <label for="sort-by">Sort by:</label>
                 <select name="sort-by" id="sort-by">
                     <option value="title">Title</option>
+                    <option value="author">Author</option>
                     <option value="category">Category</option>
                     <option value="content">Content</option>
+                    <option value="date">Date</option>
                 </select>
             <label>
                 <input type="checkbox" id="direction">Descending:
@@ -186,7 +205,9 @@ function loadPosts() {
             postDiv.setAttribute("data-post-id", post.id );
             postDiv.innerHTML = `
                 <h2 class="post-title">${post.title}</h2>
+                <p class="post-author">${post.author}</p>
                 <p class="post-category">${post.category}</p>
+                <p class="post-date">${post.date}</p>
                 <p class="post-content">${post.content}</p>
                 <button onclick="deletePost(${post.id})">Delete</button>
                 <button onclick="updatePost(${post.id})">Update</button>
@@ -218,7 +239,9 @@ function loadSortedPosts(sort, direction) {
             postDiv.setAttribute("data-post-id", post.id );
             postDiv.innerHTML = `
                 <h2 class="post-title">${post.title}</h2>
+                <p class="post-author">${post.author}</p>
                 <p class="post-category">${post.category}</p>
+                <p class="post-date">${post.date}</p>
                 <p class="post-content">${post.content}</p>
                 <button onclick="deletePost(${post.id})">Delete</button>
                 <button onclick="updatePost(${post.id})">Update</button>
@@ -286,13 +309,19 @@ function deletePost(postId) {
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token', "")}` }
     })
     .then((response) => {
-            if (!response.ok){
-                alert('Need to be logged in to delete Post!');
+            if (response.status !== 200) {
+                alert('Need to be logged in as admin to delete Post!');
                 return;
-            }
+            };
             fetch(`${baseUrl}/posts/${postId}`, {
                 method: 'DELETE',
                 headers: { 'Authorization': `Bearer ${localStorage.getItem('token', "")}` }
+            })
+            .then((response) => {
+                if (!response.ok) {
+                    alert('Need to be logged in as admin to delete Post!');
+                    throw new Error('Failed to delete post.');
+                };
             })
             .then(() => {
                 alert('Post deleted successfully!');
@@ -350,16 +379,25 @@ function handleLogin() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password })
     })
-        .then((response) => {
-            if (!response.ok) throw new Error('Failed to log in.');
-            return response.json();
-        })
-        .then((data) => {
-            alert('Login successful!');
-            localStorage.setItem('token', data.token); // Save token to localStorage
-            updateAuthUI(); // Refresh UI after login
-        })
-        .catch((error) => console.error('Error logging in:', error));
+    .then((response) => {
+        if (response.status === 401) {
+            alert('Invalid username or password!');
+            throw new Error('Login failed.');
+        };
+        if (response.status === 429) {
+            alert('Too many login attempts. Please try again later.');
+            throw new Error('Login failed.');
+        };
+        if (!response.ok && response !== 401 && response !== 429) throw new Error('Login failed.');
+        return response.json();
+    })
+    .then((data) => {
+        alert('Login successful!');
+        localStorage.setItem('token', data.token); // Save token to localStorage
+        updateAuthUI(); // Refresh UI after login
+    })
+    .catch((error) => console.error('Error logging in:', error));
+
 }
 
 // Logout function

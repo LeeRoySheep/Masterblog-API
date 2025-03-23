@@ -10,6 +10,12 @@ body {
     height: 100vh;
 }
 
+header {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 10px;
+}
+
 .container {
     background-color: #fff;
     width: 80%;

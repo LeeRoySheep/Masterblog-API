@@ -4,6 +4,7 @@ from flask_cors import CORS
 from flask_swagger_ui import get_swaggerui_blueprint
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
+from datetime import datetime
 
 #create the app with FLask
 app = Flask(__name__)
@@ -17,7 +18,7 @@ swagger_ui_blueprint = get_swaggerui_blueprint(
         "app_name": "MasterblogAPI" # (3) You can change this if you like
     })
 app.register_blueprint(swagger_ui_blueprint, url_prefix=SWAGGER_URL)
-
+# Adding rate limiter to secure app and user login
 limiter = Limiter(app=app, key_func=get_remote_address)
 
 # Configure jwt keys for user logging and adding app to jwt
@@ -30,12 +31,39 @@ CORS(app)
 
 # Dummys as memory database
 POSTS = [
-    {"id": 1, "title": "First Post", "content": "This is the first post", "category": "General"},
-    {"id": 2, "title": "Second Post", "content": "This is the second post", "category": "Updates"},
+    {
+        "id": 1,
+        "title": "First Post",
+        "content": "This is the first post",
+        "category": "General",
+        "author": "AdamAdmin",
+        "date": "2022-01-01"
+     },
+    {
+        "id": 2,
+        "title": "Second Post",
+        "content": "This is the second post",
+        "category": "Updates",
+        "author": "MaxUser",
+        "date": "2022-01-02"
+    },
 ]
-USER = {"admin": {"password": "admin", "real-name": "Adam Administrator", "role": "admin", "email": "adam.admin@masterblog.com"},
-        "user": {"password": "user", "real-name": "Max User", "role": "user", "email": "max.user@masterblog.com"}
-        } # Example user credentials
+USER = {
+    "AdamAdmin":
+        {
+            "password": "admin",
+            "real-name": "Adam Administrator",
+            "role": "admin",
+            "email": "adam.admin@masterblog.com"
+        },
+    "MaxUser":
+        {
+            "password": "user",
+            "real-name": "Max User",
+            "role": "user",
+            "email": "max.user@masterblog.com"
+        }
+    } # Example user credentials
 
 
 # Route to get posts
@@ -47,13 +75,17 @@ def get_posts():
     if sort_by and sort_dir:
         if sort_dir not in ["asc", "desc"]:
             return jsonify({"error": f"Invalid sort direction: {sort_dir}"}), 400
-        if sort_by not in ["title", "content", "category"]:
+        if sort_by not in ["title", "content", "category", "author", "date"]:
             return jsonify("error","Wrong argument for sort!"), 400
         if sort_by == "title":
             POSTS.sort(key=lambda x: x["title"], reverse=(sort_dir == "desc"))
         elif sort_by == "category":
             POSTS.sort(key=lambda x: x["title"], reverse=(sort_dir == "desc"))
         elif sort_by == "content":
+            POSTS.sort(key=lambda x: x["title"], reverse=(sort_dir == "desc"))
+        elif sort_by == "author":
+            POSTS.sort(key=lambda x: x["title"], reverse=(sort_dir == "desc"))
+        elif sort_by == "date":
             POSTS.sort(key=lambda x: x["title"], reverse=(sort_dir == "desc"))
     return jsonify(POSTS), 200
 
@@ -72,6 +104,8 @@ def add_post():
         "title": post_data.get("title"),
         "content": post_data.get("content"),
         "category": post_data.get("category"),
+        "author": get_jwt_identity(),
+        "date": datetime.now().strftime("%Y-%m-%d")
     }
     POSTS.append(new_post)
     return jsonify(new_post), 201
@@ -81,6 +115,8 @@ def add_post():
 @app.route('/api/posts/<int:post_id>', methods=['DELETE'])
 @jwt_required()
 def delete_post(post_id):
+    if USER[get_jwt_identity()]["role"] != "admin":
+        return jsonify({"msg": "You are not authorized to delete this post!"}), 401
     for post in POSTS:
         if post["id"] == post_id:
             POSTS.remove(post)
@@ -95,9 +131,13 @@ def update_post(post_id):
     post_data = request.get_json()
     for post in POSTS:
         if post["id"] == post_id:
-            post["title"] = post_data.get("title", post["title"])
-            post["content"] = post_data.get("content", post["content"])
-            post["category"] = post_data.get("category", post["category"])
+            if post_data.get("title"):
+                post["title"] = post_data.get("title")
+            if post_data.get("content"):
+                post["content"] = post_data.get("content")
+            if post_data.get("category"):
+                post["category"] = post_data.get("category")
+            post["date"] = datetime.now().strftime("%Y-%m-%d")
             return jsonify(post), 200
     return jsonify({"error": "Post not found"}), 404
 
@@ -108,6 +148,8 @@ def search_posts():
     search_title = request.args.get('title',"").lower()
     search_category = request.args.get('category',"").lower()
     search_content = request.args.get('content',"").lower()
+    search_author = request.args.get('author',"").lower()
+    search_date = request.args.get('date',"")
     found_posts = []
     for post in POSTS:
         if search_title in post["title"].lower() and search_title:
@@ -117,6 +159,10 @@ def search_posts():
             found_posts.append(post)
             continue
         if search_content in post["content"].lower() and search_content:
+            found_posts.append(post)
+        if search_author in post["author"].lower() and search_author:
+            found_posts.append(post)
+        if search_date in post["date"] and search_date:
             found_posts.append(post)
     if not found_posts:
         return jsonify({"error": "No posts found"}), 400
