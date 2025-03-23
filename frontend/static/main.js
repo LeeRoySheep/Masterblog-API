@@ -106,7 +106,7 @@ function createSearchField() {
         <label for="author">Author:</label>
         <input type="text" id="author" placeholder="Enter author to search" />
         <label for="date">Date:</label>
-        <input type="text" id="date" placeholder="Enter date to search" />
+        <input type="text" id="date" placeholder="Enter date to search" /><br>
         <button onclick="searchPosts()">Search</button>
     `;
 }
@@ -141,19 +141,21 @@ function searchPosts() {
             postDiv.className = 'post';
             postDiv.setAttribute("data-post-id", post.id );
             postDiv.innerHTML = `
-                <h2 class="post-title">${post.title}</h2>
-                <p class="post-author">${post.author}</p>
-                <p class="post-category">${post.category}</p>
-                <p class="post-date">${post.date}</p>
-                <p class="post-content">${post.content}</p>
-                <button onclick="deletePost(${post.id})">Delete</button>
-                <button onclick="updatePost(${post.id})">Update</button>
+                <table class="post-table">
+                <th><h2 class="post-title">${post.title}</h2><br>
+                <p class="post-author">${post.author}</p></th>
+                <th><p class="post-category">${post.category}</p><br>
+                <p class="post-date">${post.date}</p></th>
+                <tr><p class="post-content">${post.content}</p></tr>
+                <tf><button onclick="deletePost(${post.id})">Delete</button><br>
+                <button onclick="updatePost(${post.id})">Update</button></tf>
+                </table>
             `;
             postContainer.appendChild(postDiv);
-            postContainer.innerHTML += `
-                <button onclick="loadPosts()">back</button>
-            `;
         });
+        postContainer.innerHTML += `
+            <button onclick="loadPosts()">back</button>
+        `;
 
     })
     .catch((error) => {
@@ -196,17 +198,19 @@ function loadPosts() {
         postContainer.innerHTML = ''; // Clear existing posts
         createSortField(postContainer); // Add search field
         data.forEach((post) => {
-            const postDiv = document.createElement('div');
+            const postDiv = document.createElement('table');
             postDiv.className = 'post';
             postDiv.setAttribute("data-post-id", post.id );
             postDiv.innerHTML = `
-                <h2 class="post-title">${post.title}</h2>
-                <p class="post-author">${post.author}</p>
-                <p class="post-category">${post.category}</p>
-                <p class="post-date">${post.date}</p>
-                <p class="post-content">${post.content}</p>
-                <button onclick="deletePost(${post.id})">Delete</button>
-                <button onclick="updatePost(${post.id})">Update</button>
+                <table class="post-table">
+                <th><h2 class="post-title">${post.title}</h2><br>
+                <p class="post-author">${post.author}</p></th>
+                <th><p class="post-category">${post.category}</p><br>
+                <p class="post-date">${post.date}</p></th>
+                <tr><p class="post-content">${post.content}</p></tr>
+                <tf><button onclick="deletePost(${post.id})">Delete</button><br>
+                <button onclick="updatePost(${post.id})">Update</button></tf>
+                </table>
             `;
             postContainer.appendChild(postDiv);
         });
@@ -234,16 +238,21 @@ function loadSortedPosts(sort, direction) {
             postDiv.className = 'post';
             postDiv.setAttribute("data-post-id", post.id );
             postDiv.innerHTML = `
-                <h2 class="post-title">${post.title}</h2>
-                <p class="post-author">${post.author}</p>
-                <p class="post-category">${post.category}</p>
-                <p class="post-date">${post.date}</p>
-                <p class="post-content">${post.content}</p>
-                <button onclick="deletePost(${post.id})">Delete</button>
-                <button onclick="updatePost(${post.id})">Update</button>
+                <table class="post-table">
+                <th><h2 class="post-title">${post.title}</h2><br>
+                <p class="post-author">${post.author}</p></th>
+                <th><p class="post-category">${post.category}</p><br>
+                <p class="post-date">${post.date}</p></th>
+                <tr><p class="post-content">${post.content}</p></tr>
+                <tf><button onclick="deletePost(${post.id})">Delete</button><br>
+                <button onclick="updatePost(${post.id})">Update</button></tf>
+                </table>
             `;
             postContainer.appendChild(postDiv);
         });
+        postContainer.innerHTML += `
+            <button onclick="loadPosts()">back</button>
+        `;
     })
     .catch((error) => console.error('Error fetching posts:', error));
 }

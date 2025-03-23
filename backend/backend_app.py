@@ -5,6 +5,7 @@ from flask_swagger_ui import get_swaggerui_blueprint
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from datetime import datetime
+import json
 
 #create the app with FLask
 app = Flask(__name__)
@@ -29,25 +30,6 @@ jwt = JWTManager(app)
 # Add CORS to allow cross-origin requests for independent host server requests
 CORS(app)
 
-# Dummys as memory database
-POSTS = [
-    {
-        "id": 1,
-        "title": "First Post",
-        "content": "This is the first post",
-        "category": "General",
-        "author": "AdamAdmin",
-        "date": "2022-01-01"
-     },
-    {
-        "id": 2,
-        "title": "Second Post",
-        "content": "This is the second post",
-        "category": "Updates",
-        "author": "MaxUser",
-        "date": "2022-01-02"
-    },
-]
 USER = {
     "AdamAdmin":
         {
@@ -66,12 +48,25 @@ USER = {
     } # Example user credentials
 
 
+#getter for posts
+def posts():
+    with open("posts.json", "r", encoding="utf8") as reader:
+        return json.load(reader)
+
+
+#setter for posts
+def posts_set(pos):
+    with open("posts.json", "w", encoding="utf8") as writer:
+        json.dump(pos, writer, indent=4)
+
+
 # Route to get posts
 @app.route('/api/posts', methods=['GET'])
 @limiter.limit("10/minute")
 def get_posts():
     sort_by = request.args.get('sort', "").lower()
     sort_dir = request.args.get('direction', "").lower()
+    POSTS = posts()
     if sort_by and sort_dir:
         if sort_dir not in ["asc", "desc"]:
             return jsonify({"error": f"Invalid sort direction: {sort_dir}"}), 400
@@ -80,13 +75,13 @@ def get_posts():
         if sort_by == "title":
             POSTS.sort(key=lambda x: x["title"], reverse=(sort_dir == "desc"))
         elif sort_by == "category":
-            POSTS.sort(key=lambda x: x["title"], reverse=(sort_dir == "desc"))
+            POSTS.sort(key=lambda x: x["category"], reverse=(sort_dir == "desc"))
         elif sort_by == "content":
-            POSTS.sort(key=lambda x: x["title"], reverse=(sort_dir == "desc"))
+            POSTS.sort(key=lambda x: x["content"], reverse=(sort_dir == "desc"))
         elif sort_by == "author":
-            POSTS.sort(key=lambda x: x["title"], reverse=(sort_dir == "desc"))
+            POSTS.sort(key=lambda x: x["author"], reverse=(sort_dir == "desc"))
         elif sort_by == "date":
-            POSTS.sort(key=lambda x: x["title"], reverse=(sort_dir == "desc"))
+            POSTS.sort(key=lambda x: x["date"], reverse=(sort_dir == "desc"))
     return jsonify(POSTS), 200
 
 
@@ -94,6 +89,7 @@ def get_posts():
 @app.route('/api/posts', methods=['POST'])
 @jwt_required()
 def add_post():
+    POSTS = posts()
     post_data = request.get_json()
     if len(POSTS) > 0:
         new_id = POSTS[len(POSTS) - 1]["id"] + 1
@@ -108,6 +104,7 @@ def add_post():
         "date": datetime.now().strftime("%Y-%m-%d")
     }
     POSTS.append(new_post)
+    posts_set(POSTS)
     return jsonify(new_post), 201
 
 
@@ -115,11 +112,13 @@ def add_post():
 @app.route('/api/posts/<int:post_id>', methods=['DELETE'])
 @jwt_required()
 def delete_post(post_id):
+    POSTS = posts()
     if USER[get_jwt_identity()]["role"] != "admin":
         return jsonify({"msg": "You are not authorized to delete this post!"}), 401
     for post in POSTS:
         if post["id"] == post_id:
             POSTS.remove(post)
+            posts_set(POSTS)
             return jsonify({"msg": "Post deleted successfully!"}), 200
     return jsonify({"msg": "Post not found!"}), 401
 
@@ -128,6 +127,7 @@ def delete_post(post_id):
 @app.route('/api/posts/<int:post_id>', methods=['PUT'])
 @jwt_required()
 def update_post(post_id):
+    POSTS = posts()
     post_data = request.get_json()
     for post in POSTS:
         if post["id"] == post_id:
@@ -138,6 +138,7 @@ def update_post(post_id):
             if post_data.get("category"):
                 post["category"] = post_data.get("category")
             post["date"] = datetime.now().strftime("%Y-%m-%d")
+            posts_set(POSTS)
             return jsonify(post), 200
     return jsonify({"error": "Post not found"}), 404
 
@@ -145,6 +146,7 @@ def update_post(post_id):
 # Route to search for blog entries
 @app.route( '/api/posts/search', methods=['GET'])
 def search_posts():
+    POSTS = posts()
     search_title = request.args.get('title',"").lower()
     search_category = request.args.get('category',"").lower()
     search_content = request.args.get('content',"").lower()
@@ -189,6 +191,7 @@ def login():
 @jwt_required()
 def protected():
     if request.args.get("id"):
+        POSTS = posts()
         for post in POSTS:
             if post["id"] == int(request.args.get("id")):
                 if (get_jwt_identity() != post["author"]
@@ -206,4 +209,4 @@ def logout():
 
 
 if __name__ == '__main__':
-    app.run(port=3002)
+    app.run(port=5002)

@@ -11,6 +11,7 @@ body {
 }
 
 header {
+    width: 100%;
     text-align: center;
     margin-bottom: 20px;
     font-size: 10px;
@@ -63,7 +64,6 @@ header {
     background-color: #3355dd;
 }
 
-
 /* Main Post Container */
 .post {
     display: flex;
@@ -80,6 +80,27 @@ header {
 .post-content {
     flex-direction: column;
     text-align: left; /* Keeps text aligned left */
+    flex-wrap: wrap;
+}
+
+.post-table {
+    flex-direction: row;
+    text-align: left; /* Keeps text aligned left */
+}
+
+.post-table th {
+    justify-self: left;
+    text-align: left;
+}
+
+.post-table td {
+    justify-self: center;
+    text-align: center;
+}
+
+.post-table tf {
+    justify-self: right;
+    text-align: right;
 }
 
 /* Heading (Centered) */
