@@ -30,6 +30,40 @@ jwt = JWTManager(app)
 # Add CORS to allow cross-origin requests for independent host server requests
 CORS(app)
 
+POSTS1 = [
+    {
+        "id": 1,
+        "title": "First Post",
+        "content": "This is the first post",
+        "category": "General",
+        "author": "AdamAdmin",
+        "date": "2022-01-01"
+    },
+    {
+        "id": 2,
+        "title": "Second Post",
+        "content": "This is the second post",
+        "category": "Updates",
+        "author": "MaxUser",
+        "date": "2022-01-02"
+    },
+    {
+        "id": 3,
+        "title": "Third Post",
+        "content": "Please feel free to register and leave a comment!",
+        "category": "General",
+        "author": "AdamAdmin",
+        "date": "2025-03-23"
+    },
+    {
+        "id": 4,
+        "title": "Comment Third",
+        "content": "Hi Adam just wanted to update you!",
+        "category": "Updates",
+        "author": "MaxUser",
+        "date": "2025-03-23"
+    }
+]
 USER = {
     "AdamAdmin":
         {
@@ -54,13 +88,16 @@ def posts():
         with open("./static/posts.json", "r", encoding="utf8") as reader:
             return json.load(reader)
     except FileNotFoundError as e:
-        return {}
+        return POSTS1
 
 
 #setter for posts
 def posts_set(pos):
-    with open("./static/posts.json", "w", encoding="utf8") as writer:
-        json.dump(pos, writer, indent=4)
+    try:
+        with open("./static/posts.json", "w", encoding="utf8") as writer:
+            json.dump(pos, writer, indent=4)
+    except FileNotFoundError as e:
+        POSTS1 = pos
 
 
 # Route to get posts
