@@ -148,12 +148,29 @@ function searchPosts() {
     });
 }
 
+// create sort field for posts
+function createSortField(container) {
+    container.innerHTML += `
+            <label for="sort-by">Sort by:</label>
+                <select name="sort-by" id="sort-by">
+                    <option value="title">Title</option>
+                    <option value="category">Category</option>
+                    <option value="content">Content</option>
+                </select>
+            <label>
+                <input type="checkbox" id="direction">Descending:
+            </label>
+            <button onclick="loadSortedPosts(document.getElementById('sort-by').value,
+             document.getElementById('direction').checked ? 'desc' : 'asc')">Sort</button>
+    `
+}
+
 // Load all posts
 function loadPosts() {
     const baseUrl = document.getElementById('api-base-url').value;
-
     fetch(`${baseUrl}/posts`, {
-        method: 'GET'
+            method: 'GET'
+
     })
     .then((response) => {
         if (!response.ok) throw new Error('Failed to fetch posts.');
@@ -162,7 +179,39 @@ function loadPosts() {
     .then((data) => {
         const postContainer = document.getElementById('post-container') || createPostContainer();
         postContainer.innerHTML = ''; // Clear existing posts
+        createSortField(postContainer); // Add search field
+        data.forEach((post) => {
+            const postDiv = document.createElement('div');
+            postDiv.className = 'post';
+            postDiv.setAttribute("data-post-id", post.id );
+            postDiv.innerHTML = `
+                <h2 class="post-title">${post.title}</h2>
+                <p class="post-category">${post.category}</p>
+                <p class="post-content">${post.content}</p>
+                <button onclick="deletePost(${post.id})">Delete</button>
+                <button onclick="updatePost(${post.id})">Update</button>
+            `;
+            postContainer.appendChild(postDiv);
+        });
+    })
+    .catch((error) => console.error('Error fetching posts:', error));
+}
 
+// Load all posts sorted
+function loadSortedPosts(sort, direction) {
+    const baseUrl = document.getElementById('api-base-url').value;
+    fetch(`${baseUrl}/posts?sort=${sort}&direction=${direction}`, {
+            method: 'GET'
+
+    })
+    .then((response) => {
+        if (!response.ok) throw new Error('Failed to fetch posts.');
+        return response.json();
+    })
+    .then((data) => {
+        const postContainer = document.getElementById('post-container') || createPostContainer();
+        postContainer.innerHTML = ''; // Clear existing posts
+        createSortField(postContainer); // Add sort field
         data.forEach((post) => {
             const postDiv = document.createElement('div');
             postDiv.className = 'post';

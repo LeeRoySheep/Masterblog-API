@@ -2,6 +2,8 @@ from flask import Flask, jsonify, request
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
 from flask_cors import CORS
 from flask_swagger_ui import get_swaggerui_blueprint
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 
 #create the app with FLask
 app = Flask(__name__)
@@ -16,7 +18,7 @@ swagger_ui_blueprint = get_swaggerui_blueprint(
     })
 app.register_blueprint(swagger_ui_blueprint, url_prefix=SWAGGER_URL)
 
-
+limiter = Limiter(app=app, key_func=get_remote_address)
 
 # Configure jwt keys for user logging and adding app to jwt
 app.config['SECRET_KEY'] = 'myKey'
@@ -31,14 +33,28 @@ POSTS = [
     {"id": 1, "title": "First Post", "content": "This is the first post", "category": "General"},
     {"id": 2, "title": "Second Post", "content": "This is the second post", "category": "Updates"},
 ]
-USER = {"admin": {"password": "admin", "real-name": "Adam Administrateur", "role": "admin", "email": "adam.admin@masterblog.com"},
+USER = {"admin": {"password": "admin", "real-name": "Adam Administrator", "role": "admin", "email": "adam.admin@masterblog.com"},
         "user": {"password": "user", "real-name": "Max User", "role": "user", "email": "max.user@masterblog.com"}
         } # Example user credentials
 
 
 # Route to get posts
 @app.route('/api/posts', methods=['GET'])
+@limiter.limit("10/minute")
 def get_posts():
+    sort_by = request.args.get('sort', "").lower()
+    sort_dir = request.args.get('direction', "").lower()
+    if sort_by and sort_dir:
+        if sort_dir not in ["asc", "desc"]:
+            return jsonify({"error": f"Invalid sort direction: {sort_dir}"}), 400
+        if sort_by not in ["title", "content", "category"]:
+            return jsonify("error","Wrong argument for sort!"), 400
+        if sort_by == "title":
+            POSTS.sort(key=lambda x: x["title"], reverse=(sort_dir == "desc"))
+        elif sort_by == "category":
+            POSTS.sort(key=lambda x: x["title"], reverse=(sort_dir == "desc"))
+        elif sort_by == "content":
+            POSTS.sort(key=lambda x: x["title"], reverse=(sort_dir == "desc"))
     return jsonify(POSTS), 200
 
 
@@ -109,6 +125,7 @@ def search_posts():
 
 # Login route
 @app.route('/api/login', methods=['POST'])
+@limiter.limit("3/minute")
 def login():
     data = request.get_json()
     username = data.get("username")
