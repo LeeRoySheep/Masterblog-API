@@ -50,13 +50,13 @@ USER = {
 
 #getter for posts
 def posts():
-    with open("posts.json", "r", encoding="utf8") as reader:
+    with open("./posts.json", "r", encoding="utf8") as reader:
         return json.load(reader)
 
 
 #setter for posts
 def posts_set(pos):
-    with open("posts.json", "w", encoding="utf8") as writer:
+    with open("./posts.json", "w", encoding="utf8") as writer:
         json.dump(pos, writer, indent=4)
 
 
