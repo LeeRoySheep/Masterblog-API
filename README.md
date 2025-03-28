@@ -10,6 +10,9 @@ MaxUser with Password 'user'
 and         
 AdamAdmin with Password 'admin'.    
 Please note that without the auth token and user you can only search and order posts
+## API
+The API is accessible at http://localhost:5002/api/docs
+I am still working on the API Documentation I am happy for any help 
 ## Anotations
 If you have any Ideas how to optimize the programm feel free and write to me I am always happy to learn.
 If you like the code feel free to use it copy it or change it...
