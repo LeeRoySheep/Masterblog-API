@@ -128,7 +128,7 @@ function searchPosts() {
         method: 'GET'
     })
     .then((response) => {
-        if (!response.ok) throw new Error('Failed to fetch posts.');
+        if (!response.ok) throw new Error('Failed to find posts.');
         return response.json();
     })
     .then((data) => {
@@ -159,6 +159,7 @@ function searchPosts() {
 
     })
     .catch((error) => {
+        alert('Failed to find posts.');
         console.error('Error searching posts:', error);
     });
 }

@@ -1,350 +1,357 @@
 {
-    "swagger": "2.0",
-    "info": {
-        "title": "Masterblog API",
-        "version": "1.0.0"
+  "swagger": "2.0",
+  "info": {
+    "title": "Masterblog API",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:5002"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Get",
+      "description": "Get API - CRUD"
     },
-    "servers": [
-        {
-            "url": "http://localhost:5002"
-        }
+    {
+      "name": "Post",
+      "description": "Post API - CRUD"
+    },
+    {
+      "name": "Delete",
+      "description": "Delete API - CRUD"
+    },
+    {
+      "name": "Put",
+      "description": "Put API - CRUD"
+    }
+  ],
+  "paths": {
+    "/api/posts/search": {
+  "get": {
+    "summary": "Search for posts by title, content, and category.",
+    "description": "Search for posts containing specific terms in their title, content, or category.",
+    "parameters": [
+      {
+        "name": "title",
+        "in": "query",
+        "type": "string",
+        "required": false,
+        "description": "Search term for post title"
+      },
+      {
+        "name": "content",
+        "in": "query",
+        "type": "string",
+        "required": false,
+        "description": "Search term for post content"
+      },
+      {
+        "name": "category",
+        "in": "query",
+        "type": "string",
+        "required": false,
+        "description": "Search term for post category"
+      }
+    ],
+    "produces": [
+      "application/json"
     ],
     "tags": [
-        {
-            "name": "Get",
-            "description": "Get API - CRUD"
-        },
-        {
-            "name": "Post",
-            "description": "Post API - CRUD"
-        },
-        {
-            "name": "Delete",
-            "description": "Delete API - CRUD"
-        },
-        {
-            "name": "Put",
-            "description": "Put API - CRUD"
-        }
+      "Get"
     ],
-    "paths": {
-        "/api/posts": {
-            "get": {
-                "summary": "Returns all posts",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Get"
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successful operation"
-                    }
-                }
-            },
-            "post": {
-                "summary": "Returns the posted post as dictionary",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Post"
-                ],
-                "security": [
-                    {
-                        "bearerAuth": [],
-                        "bearerFormat": "JWT",
-                        "scheme": "bearer",
-                        "type": "http",
-                        "in": "header",
-                        "name": "Authorization",
-                        "required": true,
-                        "description": "Bearer <token>",
-                        "tokenUrl": "http://localhost:3002/api/protected"
-                    }
-                ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/Post"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "201": {
-                        "description": "A new resource was created successfully."
-                    },
-                    "401": {
-                        "description": "Unauthorized"
-                    }
-                }
-            }
-        },
-        "/api/posts/{id}": {
-            "delete": {
-                "description": "Deletes a post and returns it as dictionary",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Delete"
-                ],
-                "security": [
-                    {
-                        "bearerAuth": [],
-                        "bearerFormat": "JWT",
-                        "scheme": "bearer",
-                        "type": "http",
-                        "in": "header",
-                        "name": "Authorization",
-                        "required": true,
-                        "description": "Bearer <token>",
-                        "tokenUrl": "http://localhost:3002/api/protected"
-                    }
-                ],
-                "query": {
-                    "id": {
-                        "type": "integer",
-                        "format": "int64",
-                        "required": true
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Successful deleted post"
-                    },
-                    "401": {
-                        "description": "Unauthorized"
-                    }
-                }
-            },
-            "put": {
-                "description": "Updates a post and returns it as dictionary",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Put"
-                ],
-                "security": [
-                    {
-                        "bearerAuth": [],
-                        "bearerFormat": "JWT",
-                        "scheme": "bearer",
-                        "type": "http",
-                        "in": "header",
-                        "name": "Authorization",
-                        "required": true,
-                        "description": "Bearer <token>",
-                        "tokenUrl": "http://localhost:3002/api/protected"
-                    }
-                ],
-                "query": {
-                    "id": {
-                        "type": "integer",
-                        "format": "int64",
-                        "required": true
-                    }
-                },
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "integer",
-                            "format": "int64"
-                        }
-                    }
-                ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/Post"
-                            }
-                        }
-                    },
-                    "parameters": [
-                        {
-                            "name": "title",
-                            "in": "requestBody",
-                            "required": false,
-                            "schema": {
-                                "type": "string"
-                            }
-                        },
-                        {
-                            "name": "content",
-                            "in": "requestBody",
-                            "required": false,
-                            "schema": {
-                                "type": "string"
-                            }
-                        },
-                        {
-                            "name": "category",
-                            "in": "requestBody",
-                            "required": false,
-                            "schema": {
-                                "type": "string"
-                            }
-                        }
-                    ]
-                }
-            },
-            "responses": {
-                "200": {
-                    "description": "Successful updated post"
-                },
-                "401": {
-                    "description": "Unauthorized access"
-                }
-            }
-        },
-        "/api/posts/search?title={title}&content={content}&category={category}": {
-            "get": {
-                "summary": "Returns all posts containing the search terms",
-                "description": "Search for posts by title, content, and category.",
-                "query": {
-                    "title": {
-                        "type": "string",
-                        "required": false
-                    },
-                    "content": {
-                        "type": "string",
-                        "required": false
-                    },
-                    "category": {
-                        "type": "string",
-                        "required": false
-                    }
-                },
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Get"
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successful operation"
-                    },
-                    "400": {
-                        "description": "Bad request"
-                    }
-                }
-            }
-        },
-        "api/login": {
-            "post": {
-                "summary": "Returns the user token as token",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Post"
-                ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "parameters": [
-                                {
-                                    "name": "username",
-                                    "in": "requestBody",
-                                    "required": true,
-                                    "schema": {
-                                        "type": "string"
-                                    }
-                                },
-                                {
-                                    "name": "password",
-                                    "in": "requestBody",
-                                    "required": true,
-                                    "schema": {
-                                        "type": "string"
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Authenticated successfully."
-                    }
-                }
-            }
-        },
-        "api/logout": {
-            "post": {
-                "summary": "Returns the user token as token",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Post"
-                ],
-                "Authorization": "Bearer <token>",
-                "responses": {
-                    "200": {
-                        "description": "Logout successfully."
-                    }
-                }
-            }
-        },
-        "api/protected": {
-            "get": {
-                "summary": "Returns the user token as token",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Get"
-                ],
-                "security": [
-                    {
-                        "bearerAuth": [],
-                        "bearerFormat": "JWT",
-                        "scheme": "bearer",
-                        "type": "http",
-                        "in": "header",
-                        "name": "Authorization",
-                        "required": true,
-                        "description": "Bearer <token>",
-                        "tokenUrl": "http://localhost:3002/api/protected"
-                    }
-                ]
-            },
-            "responses": {
-                "200": {
-                    "description": "Authentification successfully."
-                }
-            }
+    "responses": {
+      "200": {
+        "description": "Successful search operation"
+      },
+      "400": {
+        "description": "Bad request"
+      }
+    }
+  }
+},
+    "/api/posts": {
+      "get": {
+        "summary": "Returns all posts",
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Get"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation"
+          }
         }
-    },
-    "components": {
-        "schemas": {
-            "Post": {
+      },
+      "post": {
+        "summary": "Returns the posted post as dictionary",
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Post"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "type": "string",
+            "description": "Bearer token for authentication",
+            "default": "Bearer <token>",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "type": "object",
+            "required": true,
+            "description": "Post object",
+            "schema": {
                 "type": "object",
                 "properties": {
                     "title": {
-                        "type": "string"
+                        "type": "string",
+                        "default": "title"
                     },
                     "content": {
-                        "type": "string"
+                        "type": "string",
+                        "default": "content"
                     },
                     "category": {
-                        "type": "string"
+                        "type": "string",
+                        "default": "category"
+                    }
+                }
+
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "A new resource was created successfully."
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/api/posts/{id}": {
+      "delete": {
+        "summary": "Deletes a post by ID",
+        "tags": [
+          "Delete"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "type": "integer",
+            "format": "int64",
+            "description": "ID of the post to delete",
+            "required": true
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "type": "string",
+            "description": "Bearer token for authentication",
+            "default": "Bearer <token>",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Post successfully deleted"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      },
+      "put": {
+        "summary": "Updates a post by ID",
+        "tags": [
+          "Put"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "type": "integer",
+            "format": "int64",
+            "description": "ID of the post to update",
+            "required": true
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "type": "string",
+            "description": "Bearer token for authentication",
+            "default": "Bearer <token>",
+            "required": true
+          },
+            {
+                "name": "body",
+                "in": "body",
+                "type": "object",
+                "required": false,
+                "description": "Post object",
+                "schema": {
+                    "type": "json/object",
+                    "properties": {
+                        "title": {
+                            "type": "string",
+                            "default": ""
+                        },
+                        "content": {
+                            "type": "string",
+                            "default": ""
+                        },
+                        "category": {
+                            "type": "string",
+                            "default": ""
+                        }
                     }
                 }
             }
+        ],
+        "responses": {
+          "200": {
+            "description": "Post successfully updated"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
         }
+      }
+    },
+    "/api/login": {
+      "post": {
+        "summary": "Returns the user token as token",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Post"
+        ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "username": {
+
+                    "default": "MaxUser"
+                },
+                "password": {
+                    "default": "user"
+                }
+              },
+              "required": [
+                "username",
+                "password"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Authenticated successfully."
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/api/logout": {
+      "post": {
+        "summary": "Logout the user",
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Post"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "type": "string",
+            "description": "Bearer token for authentication",
+              "default": "Bearer <token>",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Logout successfully."
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/api/protected": {
+      "get": {
+        "summary": "Returns the user token as token",
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Get"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "type": "string",
+            "description": "Bearer token for authentication",
+            "default": "Bearer <token>",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Authenticated successfully."
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
     }
+  },
+  "components": {
+    "schemas": {
+      "Post": {
+        "type": "json",
+        "properties": {
+          "title": {
+            "type": "string",
+              "default": "\"title\":\"\""
+          },
+          "content": {
+            "type": "string",
+              "default": "\"content\":\"\""
+          },
+          "category": {
+            "type": "string",
+              "default": "\"category\":\"\""
+          }
+        }
+      }
+    }
+  }
 }

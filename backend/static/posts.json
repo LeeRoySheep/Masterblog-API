@@ -30,5 +30,37 @@
         "category": "Updates",
         "author": "MaxUser",
         "date": "2025-03-23"
+    },
+    {
+        "id": 5,
+        "title": "saDF",
+        "content": "ADSF",
+        "category": "testtestes",
+        "author": "AdamAdmin",
+        "date": "2025-04-04"
+    },
+    {
+        "id": 6,
+        "title": "asdf",
+        "content": "asdf",
+        "category": "\"\"",
+        "author": "MaxUser",
+        "date": "2025-04-04"
+    },
+    {
+        "id": 7,
+        "title": "MaxUser",
+        "content": "user",
+        "category": "",
+        "author": "MaxUser",
+        "date": "2025-04-04"
+    },
+    {
+        "id": 8,
+        "title": "the",
+        "content": "string and more text",
+        "category": "some",
+        "author": "AdamAdmin",
+        "date": "2025-04-04"
     }
 ]

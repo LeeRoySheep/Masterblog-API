@@ -137,9 +137,9 @@ def add_post():
         new_id = 1
     new_post = {
         "id": new_id,
-        "title": post_data.get("title"),
-        "content": post_data.get("content"),
-        "category": post_data.get("category"),
+        "title": post_data.get("title", ""),
+        "content": post_data.get("content", ""),
+        "category": post_data.get("category", ""),
         "author": get_jwt_identity(),
         "date": datetime.now().strftime("%Y-%m-%d")
     }
@@ -193,6 +193,7 @@ def search_posts():
     search_author = request.args.get('author',"").lower()
     search_date = request.args.get('date',"")
     found_posts = []
+
     for post in POSTS:
         if search_title in post["title"].lower() and search_title:
             found_posts.append(post)
