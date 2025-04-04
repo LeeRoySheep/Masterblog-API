@@ -135,9 +135,13 @@ def add_post():
         new_id = POSTS[len(POSTS) - 1]["id"] + 1
     else:
         new_id = 1
+    if not isinstance(post_data.get("title",""),str) \
+        or not isinstance(post_data.get("content",""),str) \
+        or not isinstance(post_data.get("category",""),str):
+        return jsonify({"msg": "Only string type accepted as input!"}), 401
     new_post = {
         "id": new_id,
-        "title": post_data.get("title", ""),
+        "title": post_data.get("title",""),
         "content": post_data.get("content", ""),
         "category": post_data.get("category", ""),
         "author": get_jwt_identity(),
@@ -154,7 +158,7 @@ def add_post():
 def delete_post(post_id):
     POSTS = posts()
     if USER[get_jwt_identity()]["role"] != "admin":
-        return jsonify({"msg": "You are not authorized to delete this post!"}), 401
+        return jsonify({"msg": "Only admin is authorized to delete posts!"}), 401
     for post in POSTS:
         if post["id"] == post_id:
             POSTS.remove(post)
@@ -168,19 +172,25 @@ def delete_post(post_id):
 @jwt_required()
 def update_post(post_id):
     POSTS = posts()
-    post_data = request.get_json()
-    for post in POSTS:
-        if post["id"] == post_id:
-            if post_data.get("title"):
-                post["title"] = post_data.get("title")
-            if post_data.get("content"):
-                post["content"] = post_data.get("content")
-            if post_data.get("category"):
-                post["category"] = post_data.get("category")
+    post = [post for post in POSTS if post["id"] == post_id]
+    if not post:
+        return jsonify({"error": "Post not found!"}), 404
+    post = post[0]
+    if get_jwt_identity() == post["author"] \
+        or USER[get_jwt_identity()]["role"] == "admin":
+        post_data = request.get_json()
+        if post_data:
+            if post_data.get("title",""):
+                post["title"] = post_data.get("title","")
+            if post_data.get("content",""):
+                post["content"] = post_data.get("content","")
+            if post_data.get("category",""):
+                post["category"] = post_data.get("category","")
             post["date"] = datetime.now().strftime("%Y-%m-%d")
             posts_set(POSTS)
             return jsonify(post), 200
-    return jsonify({"error": "Post not found"}), 404
+        return jsonify({"error": "Post not found"}), 404
+    return jsonify({"msg": "You are not authorized to update this post!"}), 401
 
 
 # Route to search for blog entries
@@ -234,7 +244,7 @@ def protected():
     if request.args.get("id"):
         POSTS = posts()
         for post in POSTS:
-            if post["id"] == int(request.args.get("id")):
+            if int(post["id"]) == int(request.args.get("id")):
                 if (get_jwt_identity() != post["author"]
                     and USER[get_jwt_identity()]["role"] != "admin"):
                     return jsonify({"msg": "You are not authorized to change this post!"}), 401

@@ -1,27 +1,27 @@
 [
     {
         "id": 1,
-        "title": "First Post",
+        "title": "AdminUpdating",
         "content": "This is the first post",
-        "category": "General",
+        "category": "UserAuth",
         "author": "AdamAdmin",
-        "date": "2022-01-01"
+        "date": "2025-04-04"
     },
     {
         "id": 2,
         "title": "Second Post",
         "content": "This is the second post",
-        "category": "Updates",
+        "category": "asdf",
         "author": "MaxUser",
-        "date": "2022-01-02"
+        "date": "2025-04-04"
     },
     {
         "id": 3,
-        "title": "Third Post",
+        "title": "AdminUpdating",
         "content": "Please feel free to register and leave a comment!",
-        "category": "General",
+        "category": "UserAuth",
         "author": "AdamAdmin",
-        "date": "2025-03-23"
+        "date": "2025-04-04"
     },
     {
         "id": 4,
@@ -43,7 +43,7 @@
         "id": 6,
         "title": "asdf",
         "content": "asdf",
-        "category": "\"\"",
+        "category": "",
         "author": "MaxUser",
         "date": "2025-04-04"
     },
@@ -56,11 +56,35 @@
         "date": "2025-04-04"
     },
     {
-        "id": 8,
-        "title": "the",
-        "content": "string and more text",
-        "category": "some",
+        "id": 9,
+        "title": "Updates!",
+        "content": "Please regularly check to update your post or contact admin to delete in case of outdated posts",
+        "category": "Posting",
         "author": "AdamAdmin",
+        "date": "2025-04-04"
+    },
+    {
+        "id": 10,
+        "title": "check",
+        "content": "content",
+        "category": "category",
+        "author": "AdamAdmin",
+        "date": "2025-04-04"
+    },
+    {
+        "id": 11,
+        "title": "null",
+        "content": "some content",
+        "category": "test",
+        "author": "MaxUser",
+        "date": "2025-04-04"
+    },
+    {
+        "id": 12,
+        "title": "",
+        "content": "asdf",
+        "category": "ads",
+        "author": "MaxUser",
         "date": "2025-04-04"
     }
 ]

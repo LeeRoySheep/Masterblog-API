@@ -53,6 +53,20 @@
         "type": "string",
         "required": false,
         "description": "Search term for post category"
+      },
+      {
+        "name": "author",
+        "in": "query",
+        "type": "string",
+        "required": false,
+        "decription": "Search for author of a post."
+      },
+      {
+        "name": "date",
+        "in": "query",
+        "type": "string",
+        "required": false,
+        "description": "Search for date of last update."
       }
     ],
     "produces": [
@@ -114,15 +128,15 @@
                 "properties": {
                     "title": {
                         "type": "string",
-                        "default": "title"
+                        "default": ""
                     },
                     "content": {
                         "type": "string",
-                        "default": "content"
+                        "default": ""
                     },
                     "category": {
                         "type": "string",
-                        "default": "category"
+                        "default": ""
                     }
                 }
 
